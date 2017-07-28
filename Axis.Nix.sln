@@ -3,7 +3,30 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axis.Nix", "Axis.Nix\Axis.Nix.csproj", "{D2331440-FF42-496A-A0D5-AE8990F20191}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axis.Nix.Test", "Axis.Nix.Test\Axis.Nix.Test.csproj", "{F17AA880-7FBF-44EE-9B01-A9D5763E5501}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{15D78E00-9240-4466-9C4A-DE73B24BD17E}"
+	ProjectSection(SolutionItems) = preProject
+		Backlog.txt = Backlog.txt
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D2331440-FF42-496A-A0D5-AE8990F20191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2331440-FF42-496A-A0D5-AE8990F20191}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2331440-FF42-496A-A0D5-AE8990F20191}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2331440-FF42-496A-A0D5-AE8990F20191}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F17AA880-7FBF-44EE-9B01-A9D5763E5501}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F17AA880-7FBF-44EE-9B01-A9D5763E5501}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F17AA880-7FBF-44EE-9B01-A9D5763E5501}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F17AA880-7FBF-44EE-9B01-A9D5763E5501}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
