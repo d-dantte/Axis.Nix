@@ -35,8 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Axis.Luna">
-      <HintPath>..\..\Axis.Luna\Axis.Luna\bin\Debug\Axis.Luna.dll</HintPath>
+    <Reference Include="Axis.Luna, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Axis.Luna.3.1.0\lib\net452\Axis.Luna.dll</HintPath>
     </Reference>
     <Reference Include="Axis.Proteus, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Axis.Proteus.1.0.0\lib\net452\Axis.Proteus.dll</HintPath>
