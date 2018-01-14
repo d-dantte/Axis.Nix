@@ -2,6 +2,8 @@
 using Axis.Luna.Operation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Castle.DynamicProxy;
+using Axis.Proteus;
+using System.Collections.Generic;
 
 namespace Axis.Nix.Test
 {
@@ -12,7 +14,9 @@ namespace Axis.Nix.Test
         public void TestMethod1()
         {
             var gen = new ProxyGenerator();
-            var iroot = new InterceptorRoot(new[] { new SampleInterceptor() });
+            var registry = new InterceptorRegistry(typeof(SampleInterceptor), typeof(SampleInterceptor2));
+
+            var iroot = new InterceptorRoot(new ActivatorServiceResolver(), registry);
 
             var proxy = gen.CreateInterfaceProxyWithoutTarget<ISampleInterface>(iroot);
 
@@ -41,7 +45,41 @@ namespace Axis.Nix.Test
         => LazyOp.Try(() =>
         {
             if (context.Method.Name == "Method2") Assert.AreEqual(context.Arguments[0], 5);
+            var value = context.Next?
+                .Invoke()
+                .Resolve();
             return "called";
         });
+    }
+
+    public class SampleInterceptor2: SampleInterceptor
+    {
+    }
+
+    public class ActivatorServiceResolver : IServiceResolver
+    {
+        public void Dispose()
+        {
+        }
+
+        public Service Resolve<Service>()
+        {
+            return Activator.CreateInstance<Service>();
+        }
+
+        public object Resolve(Type serviceType)
+        {
+            return Activator.CreateInstance(serviceType);
+        }
+
+        public IEnumerable<Service> ResolveAll<Service>()
+        {
+            return new[] { Activator.CreateInstance<Service>() };
+        }
+
+        public IEnumerable<object> ResolveAll(Type serviceType)
+        {
+            return new[] { Activator.CreateInstance(serviceType) };
+        }
     }
 }

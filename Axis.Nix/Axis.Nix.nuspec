@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>Axis.Nix</id>
+    <version>1.0.0</version>
+    <authors>Dantte</authors>
+    <owners>Axiis</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Library exposing the 3 base interfaces for implementing IoCs
+    </description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>Axis Proteus IoC Container Dependency Injection Registration Consumption  </tags>
+    <dependencies>
+      <dependency id="Axis.Luna" version="3.1.0" />
+      <dependency id="Axis.Proteus" version="1.0.0" />
+      <dependency id="Axis.Rhea" version="1.0.0" />
+      <dependency id="Castle.Core" version="4.2.1" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Debug\Axis.Nix.dll" target="lib\net452" />
+  </files>
+</package>
