@@ -72,11 +72,12 @@ namespace Axis.Nix
             return false;
         }
 
-        private object CreateFailedOperation(Type operationType, Exception ex)
+        public static object CreateFailedOperation(Type operationType, Exception ex)
         {
             if(operationType.IsInterface)
             {
-                if (operationType.Implements(typeof(IOperation)))
+                var top = typeof(IOperation);
+                if (operationType == top || operationType.Implements(top))
                     return ResolvedOp.Fail(ex);
 
                 else //if(operationType.ImplementsGenericInterface(typeof(IOperation<>)))

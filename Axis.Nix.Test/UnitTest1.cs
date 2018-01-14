@@ -30,6 +30,16 @@ namespace Axis.Nix.Test
             Console.WriteLine($"call time: {DateTime.Now - start}");
             Assert.AreEqual(r, "called");
         }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            var ex = new Exception("the exception");
+            var op = InterceptorRoot.CreateFailedOperation(typeof(IOperation), ex);
+            op = InterceptorRoot.CreateFailedOperation(typeof(IOperation<string>), ex);
+            op = InterceptorRoot.CreateFailedOperation(typeof(ResolvedOperation), ex);
+            op = InterceptorRoot.CreateFailedOperation(typeof(ResolvedOperation<DateTimeOffset>), ex);
+        }
     }
 
     public interface ISampleInterface
