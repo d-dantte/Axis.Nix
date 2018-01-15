@@ -36,7 +36,7 @@
       <HintPath>..\packages\Axis.Luna.3.1.0\lib\net452\Axis.Luna.dll</HintPath>
     </Reference>
     <Reference Include="Axis.Proteus, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Axis.Proteus.1.0.0\lib\net452\Axis.Proteus.dll</HintPath>
+      <HintPath>..\packages\Axis.Proteus.1.0.2\lib\net452\Axis.Proteus.dll</HintPath>
     </Reference>
     <Reference Include="Axis.Rhea, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Axis.Rhea.1.0.0\lib\net452\Axis.Rhea.dll</HintPath>

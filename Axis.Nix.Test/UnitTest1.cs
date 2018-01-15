@@ -73,6 +73,7 @@ namespace Axis.Nix.Test
         }
 
         public Service Resolve<Service>()
+        where Service: class
         {
             return Activator.CreateInstance<Service>();
         }
@@ -83,6 +84,7 @@ namespace Axis.Nix.Test
         }
 
         public IEnumerable<Service> ResolveAll<Service>()
+        where Service: class
         {
             return new[] { Activator.CreateInstance<Service>() };
         }
