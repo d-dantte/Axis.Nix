@@ -3,3 +3,20 @@
 
 1.	AOP interceptor project initialized.
 	[Done]
+
+2022/01/24 ===========================================================================================================
+
+1.  Re-purposing the Nix project for Metrics collection
+2.  The purpose of this project is to create a "Service" that apps can use in publishing Application-level events. These events are then consumed by
+	metrics collectors (and quite possibly any other type of utility).
+3.	Application Events are types with at least a name property.
+4.	Events are registered with the event publisher, together with a respective handler. Each event may have multiple handlers.
+5.	Events are published in two ways:
+	a.	As an announcement/Notification to indicate that the event has happened.
+	b.	As a deffered instruction that once resolved, ensures that the event has occured. This, in technical terms, means that a Func<Output> or Action is
+		wrapped inside of an Event object and published. The publishing mechanism will in turn resolve the delegate. This means things like event time, etc
+		can be measured.
+6.	Certain events lend themselves to each of the listed event publishing mechanisms.
+7.	Event publishing is an asynchronious process.
+8.	Being asynchronious, deferred instructions should not be run on a separate thread/context because we cannot know what contextual information needs to be preserved
+	for the underlying event to proceed without failing.
