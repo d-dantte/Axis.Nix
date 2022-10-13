@@ -20,8 +20,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Axis.Luna.FInvoke" Version="6.0.0" />
-    <PackageReference Include="Axis.Luna.Operation" Version="6.0.0" />
+    <PackageReference Include="Axis.Luna.FInvoke" Version="6.0.2" />
+    <PackageReference Include="Axis.Luna.Operation" Version="6.0.2" />
   </ItemGroup>
 
 </Project>
