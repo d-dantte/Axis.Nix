@@ -9,7 +9,7 @@ namespace Axis.Nix.Event
     public interface IDomainEvent
     {
         /// <summary>
-        /// Event name, if needed.
+        /// 
         /// </summary>
         string Name { get; }
     }

@@ -8,10 +8,9 @@
     <Version>2.0.0</Version>
     <Authors>Dantte</Authors>
     <Company>Axiis</Company>
-    <PackageTags>Domain-Event Event Publishing Notification</PackageTags>
+    <PackageTags>Domain-Event Event Publishing Notification Metrics Collectors</PackageTags>
     <Description>
-      Application-Event publishing library. Primarily intended to publish domain events that metrics are collected for.
-      This library is intended to help abstract away metrics collection implementation from domain-logic.
+      Companion library to Axis.Nix. Contains common event and handlers for raising events that metrics can be collected for.
     </Description>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/d-dantte/Axis.Nix</PackageProjectUrl>
@@ -20,8 +19,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Axis.Luna.FInvoke" Version="6.0.2" />
-    <PackageReference Include="Axis.Luna.Operation" Version="6.0.2" />
+    <ProjectReference Include="..\Axis.Nix\Axis.Nix.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="App.Metrics" Version="4.3.0" />
     <PackageReference Include="Axis.Proteus" Version="7.1.0" />
   </ItemGroup>
 

@@ -11,7 +11,7 @@ namespace Axis.Nix.Exceptions
         internal IDomainEvent Event { get; }
 
         public HandlerException(IHandler handler, IDomainEvent @event, Exception inner)
-        :base("Handler throw an exception", inner)
+        :base("Handler threw an exception", inner)
         {
             Handler = handler;
             Event = @event;

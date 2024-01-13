@@ -5,20 +5,20 @@ using System;
 
 namespace Axis.Nix.Tests.Types
 {
-    public class Event2: IDomainEvent
+    public struct Event2Data
     {
-        public string ID { get; set; }
-
-        public string Name => typeof(Event2).FullName;
-
-        public override string ToString() => $"{{ID:{ID}, Name:{Name}}}";
+        public int X { get; set; }
+        public int Y { get; set; }
     }
 
-    public class EventHandler2 : IEventHandler<Event2>
+    public class Event2Handler : IEventHandler<Event2Data>
     {
-        public Operation HandleEvent(Event2 @event) => Operation.Try(() =>
+        public bool CanHandle(DomainEvent<Event2Data> @event) => @event != default;
+
+        public IOperation HandleEvent(DomainEvent<Event2Data> @event)
+        => Operation.Try(() =>
         {
-            Console.WriteLine($"{@event} was handled by {typeof(EventHandler2)}");
+            Console.WriteLine($"{@event.GetType()} was handled in {typeof(Event2Handler)}");
         });
     }
 }

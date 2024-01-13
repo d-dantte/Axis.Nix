@@ -1,5 +1,4 @@
-﻿using Axis.Luna.Common;
-using Axis.Luna.Extensions;
+﻿using Axis.Luna.Extensions;
 using Axis.Luna.Operation;
 using Axis.Nix.Configuration;
 using Axis.Nix.Event;
@@ -13,20 +12,22 @@ using System.Threading.Tasks;
 namespace Axis.Nix
 {
     /// <summary>
-    /// 
+    /// Event notifier that encapsulates the registered events and handlers, and routes the raised event to it's registered handlers.
     /// </summary>
-    public class DomainEventNotifier: IDomainEventNotifier
+    public class DomainEventNotifier
     {
-        private readonly Dictionary<Type, IHandler[]> handlerMaps = new Dictionary<Type, IHandler[]>();
+        private readonly Dictionary<Type, Lazy<IHandler>[]> handlerMaps = new Dictionary<Type, Lazy<IHandler>[]>();
         private readonly Options configOptions; 
         private readonly TaskFactory notifyTaskFactory;
 
         #region Constructors
-        public DomainEventNotifier(Options options, IEnumerable<(Type eventType, List<IHandler> handlers)> handlers = null)
+        public DomainEventNotifier(
+            Options options,
+            IEnumerable<(Type eventType, List<Lazy<IHandler>> handlers)> handlers)
         {
-            configOptions = options; //.ThrowIfDefault(new ArgumentException($"Default {nameof(options)} instance is invalid"));
+            configOptions = options;
 
-            var scheduler = configOptions.AsyncBehavior?.SchedulerProvider();
+            var scheduler = configOptions.AsyncBehavior?.SchedulerProvider?.Invoke() ?? AsyncOptions.DefaultSchedulerProvider();
 
             notifyTaskFactory = configOptions.IsAsyncBehaviorEnabled
                 ? new TaskFactory(
@@ -36,31 +37,53 @@ namespace Axis.Nix
                     scheduler)
                 : null;
 
-            handlers?.ForAll(pair =>
-            {
-                handlerMaps[pair.eventType] =
-                    pair.handlers?
-                        .Where(handler => handler != null) //<-- filter out nulls
-                        .ToArray()
-                    ?? throw new ArgumentNullException("Null handler list");
-            });
+            handlers
+                .ThrowIfNull(new ArgumentNullException(nameof(handlers)))
+                .ForAll(pair =>
+                {
+                    handlerMaps[pair.eventType] =
+                        pair.handlers?
+                            .Select(handler => handler.ThrowIfNull(new ArgumentException("handler list cannot contain null"))) //<-- filter out nulls
+                            .ToArray()
+                        ?? throw new ArgumentNullException("Null handler list");
+                });
         }
 
-        public DomainEventNotifier(Options options, params (Type, List<IHandler>)[] handlers)
+        public DomainEventNotifier(Options options, params (Type, List<Lazy<IHandler>>)[] handlers)
             : this(options, handlers?.AsEnumerable())
+        { }
+
+        public DomainEventNotifier(Options options, IEnumerable<KeyValuePair<Type, List<Lazy<IHandler>>>> handlers)
+            : this(options, handlers?.Select(kvp => (kvp.Key, kvp.Value)).AsEnumerable())
         { }
         #endregion
 
-        public Operation Notify<TEvent>(TEvent @event)
-        where TEvent : IDomainEvent
+        /// <summary>
+        /// Notify handlers that an event has been raised.
+        /// <para>
+        /// NOTE: all handlers get a chance to run - i.e, exceptions do not interrupt the process.
+        /// </para>
+        /// <para>
+        /// ALSO NOTE: It is PERFECTLY SAFE to discard the <see cref="IOperation"/> instance returned from this method without awaiting or resolving it.
+        /// </para>
+        /// </summary>
+        /// <typeparam name="TEventData"></typeparam>
+        /// <param name="event"></param>
+        /// <returns></returns>
+        /// <exception cref="AggregateException"></exception>
+        public IOperation Notify<TEventData>(DomainEvent<TEventData> @event)
         {
-            if (!handlerMaps.TryGetValue(typeof(TEvent), out var handlers))
-                return Operation.Fail(new HandlerNotFoundException(typeof(TEvent)));
+            if (!handlerMaps.TryGetValue(typeof(TEventData), out var handlers))
+                return Operation.Fail(new HandlerNotFoundException(typeof(TEventData)));
 
-            if (@event == null)
-                return Operation.Fail(new ArgumentNullException(nameof(@event)));
+            if (@event == default)
+                return Operation.Fail(new ArgumentException(nameof(@event)));
 
-            var typedHandlers = handlers.Cast<IEventHandler<TEvent>>().ToArray();
+            var typedHandlers = handlers
+                .Select(_h => _h.Value)
+                .Cast<IEventHandler<TEventData>>()
+                .Where(_h => _h.CanHandle(@event))
+                .ToArray();
 
             if (typedHandlers.Length > 0)
             {
@@ -75,9 +98,12 @@ namespace Axis.Nix
                             try
                             {
                                 await typedHandlers
-                                    .Select(handler => handler
-                                        .HandleEvent(@event) //<-- note that handlers MUST NOT throw exceptions from the "HandleEvent" method
-                                        .MapError(error => new HandlerException(handler, @event, error.GetException()).Throw()))
+                                    .Select(handler =>
+                                    {
+                                        return handler
+                                            .HandleEvent(@event) //<-- raw exceptions thrown from the handlers are folded into the final operation
+                                            .MapError(error => new HandlerException(handler, @event, error.GetException()).Throw());
+                                    })
                                     .Fold();
                             }
                             catch (AggregateException e)
@@ -115,6 +141,9 @@ namespace Axis.Nix
                         .Unwrap()
                         .ContinueWith(async task =>
                         {
+                            // note that exceptions thrown from handlers that are not encapsulated in their IOperations
+                            // come directly here.
+
                             if (configOptions.AsyncBehavior?.TaskSink == null)
                                 await task;
 
@@ -126,13 +155,20 @@ namespace Axis.Nix
                 }
                 else
                 {
-                    return typedHandlers
-                        .Select(handler => handler.HandleEvent(@event)) //<-- note that handlers MUST NOT throw exceptions from the "HandleEvent" method
-                        .Fold();
+                    return Operation.Try(async () => 
+                        await typedHandlers
+                            .Select(handler => handler.HandleEvent(@event)) //<-- raw exceptions thrown from the handlers are folded into the final operation
+                            .Fold());
                 }
             }
 
+            // no handlers registered
             return Operation.FromVoid();
         }
+
+        /// <summary>
+        /// Gets an array of all registered event data types
+        /// </summary>
+        public Type[] RegisteredEvents() => handlerMaps.Keys.ToArray();
     }
 }
